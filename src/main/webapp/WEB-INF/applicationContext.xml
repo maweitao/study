@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/task
+        http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+
+       <bean id="javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+              <property name="host">
+                     <value>smtp.qq.com</value>
+              </property>
+              <property name="javaMailProperties">
+                     <props>
+                            <prop key="mail.smtp.auth">true</prop>
+                            <prop key="mail.smtp.timeout">25000</prop>
+                     </props>
+              </property>
+              <property name="username">
+                     <value>gwpost@qq.com</value>
+              </property>
+              <property name="password">
+                     <value>gw201221</value>
+              </property>
+       </bean>
+
+       <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+              <property name="velocityProperties">
+                     <props>
+                            <prop key="resource.loader">class</prop>
+                            <prop key="class.resource.loader.class">
+                                   org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+                            </prop>
+                     </props>
+              </property>
+       </bean>
+
+       <task:annotation-driven/>
+       <bean id="task" class="io.github.gwpost.task.WeatherTask">
+              <property name="mailSender" ref="javaMailSender"/>
+              <property name="velocityEngine" ref="velocityEngine"/>
+       </bean>
+</beans>
