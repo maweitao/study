@@ -1,6 +1,7 @@
 package io.github.gwpost.util;
 
 import io.github.gwpost.model.WeatherInfo;
+import junit.framework.Assert;
 import org.junit.Test;
 
 /**
@@ -19,6 +20,11 @@ public class WeatherHelperTest {
         String weatherInfoStr=WeatherHelper.getWeatherInform("武汉");
         WeatherInfo weatherInfo=WeatherHelper.resolveWeatherInfo(weatherInfoStr);
         System.out.println(weatherInfo);
+    }
 
+    @Test
+    public void testIndexOf(){
+        String weather="小雨";
+        Assert.assertTrue(weather.indexOf("雨")>-1);
     }
 }

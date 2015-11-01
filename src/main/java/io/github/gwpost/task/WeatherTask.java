@@ -4,14 +4,14 @@ import io.github.gwpost.model.OneDayWeatherInfo;
 import io.github.gwpost.model.WeatherInfo;
 import io.github.gwpost.util.WeatherHelper;
 import org.apache.velocity.app.VelocityEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.UrlResource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.ui.Model;
 import org.springframework.ui.velocity.VelocityEngineUtils;
-
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -29,6 +29,8 @@ public class WeatherTask {
     private JavaMailSender mailSender;
     private VelocityEngine velocityEngine;
 
+    final Logger logger = LoggerFactory.getLogger("weatherTask");
+
     public JavaMailSender getMailSender() {
         return mailSender;
     }
@@ -45,13 +47,14 @@ public class WeatherTask {
         this.velocityEngine = velocityEngine;
     }
 
-    @Scheduled(cron = "0 10 19 * * ?")
+    @Scheduled(cron = "0 30 23 * * ?")
     public void reportWeather() throws MessagingException, MalformedURLException, UnsupportedEncodingException {
         Map<String,String> persons=new LinkedHashMap<String, String>();
-        persons.put("gwpost@qq.com","西安");
+        persons.put("gwpost@qq.com","武汉");
+        persons.put("807725980@qq.com","西安");
         for (Map.Entry<String, String> person : persons.entrySet()) {
             WeatherInfo weatherInfo= WeatherHelper.resolveWeatherInfo(WeatherHelper.getWeatherInform(person.getValue()));
-            if(weatherInfo.getWeatherInfs()[0].getWeather().indexOf("雨")<100){
+            if(weatherInfo.getWeatherInfs()[0].getWeather().indexOf("雨")>-1){
                 MimeMessage message=mailSender.createMimeMessage();
                 MimeMessageHelper helper=new MimeMessageHelper(message,true,"GBK");
                 helper.setFrom("gwpost@qq.com");
@@ -80,13 +83,17 @@ public class WeatherTask {
                 helper.addInline("imageNight",imageNight);
                 try{
                     mailSender.send(message);
-                    System.out.println("发送成功");
+                    logger.info("发送邮件给[" + person.getKey()+"],地区是["+person.getValue()+"],成功");
                 }
                 catch(MailException e){
                     e.printStackTrace();
-                    System.out.println("发送失败");
+                    logger.info("发送邮件给[" + person.getKey()+"],地区是["+person.getValue()+"],失败");
                 }
             }
+            else{
+                logger.info("明天没有雨,不需要发送邮件给[" + person.getKey()+"],地区是["+person.getValue()+"]");
+            }
+
         }
     }
 }

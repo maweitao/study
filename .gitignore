@@ -6,6 +6,7 @@ target
 .classpath
 .checkstyle
 .pmd
+logs
 *.log
 *.log.*
 *.iml  
@@ -15,3 +16,5 @@ target
 
 *.iml
 .DS_Store
+
+
